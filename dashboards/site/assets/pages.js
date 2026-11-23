@@ -58,7 +58,7 @@
     const combos = [["android", "high"], ["android", "low"], ["ios", "high"]];
     card("ov-l7", (el) => bar(el, { x: B, yFmt: fmt.pct(0), series: combos.map(([p, t], i) => ({ name: `${PN[p]}${p === "android" ? ", " + t + " memory" : ""}`, data: B.map((b) => l7(p, b, t)), color: i === 1 ? 1 : i === 0 ? 0 : 2 })) }),
       { cols: [{ key: "platform", label: "Platform", fmt: (p) => PN[p] }, { key: "build", label: "Build" }, { key: "device_tier", label: "Tier" }, { key: "starts", label: "Level-7 starts", fmt: fmt.int }, { key: "crashes", label: "Crashes", fmt: fmt.int }], rows: D.levels.filter((r) => r.level === 7) });
-    card("ov-crashfree", (el) => bar(el, { x: B, yFmt: fmt.pct(1), yMin: 0.95, yMax: 1, series: P.map((p, i) => ({ name: PN[p], data: B.map((b) => cf(p, b).crash_free_sessions ?? null), color: i })) }),
+    card("ov-crashfree", (el) => bar(el, { x: B, yFmt: fmt.pct(1), yMin: 0.9, yMax: 1, series: P.map((p, i) => ({ name: PN[p], data: B.map((b) => cf(p, b).crash_free_sessions ?? null), color: i })) }),
       { cols: [{ key: "platform", label: "Platform", fmt: (p) => PN[p] }, { key: "build", label: "Build" }, { key: "sessions", label: "Sessions", fmt: fmt.int }, { key: "crashed_sessions", label: "Crashed", fmt: fmt.int }, { key: "crash_free_sessions", label: "Crash-free", fmt: fmt.pct(2) }], rows: D.crash });
   }
 
@@ -83,14 +83,14 @@
       .concat([{ k: "Deferred crash reports", v: fmt.int(chk("Deferred crash reports")), d: `${fmt.int(chk("Crash reports outside the attribution window"))} outside 72 hours` }]));
     const xs = [], dec = [], nai = [];
     P.forEach((p) => B.forEach((b) => { xs.push(`${PN[p]} ${b}`); dec.push(cf(p, b).crash_free_sessions ?? null); nai.push(cf(p, b).naive_crash_free ?? null); }));
-    card("st-build", (el) => bar(el, { x: xs, yFmt: fmt.pct(1), yMin: 0.95, yMax: 1, series: [{ name: "Declared: sessions", data: dec, color: 0 }, { name: "Naive: session_start events", data: nai, color: 1 }] }),
+    card("st-build", (el) => bar(el, { x: xs, yFmt: fmt.pct(1), yMin: 0.9, yMax: 1, series: [{ name: "Declared: sessions", data: dec, color: 0 }, { name: "Naive: session_start events", data: nai, color: 1 }] }),
       { cols: [{ key: "platform", label: "Platform", fmt: (p) => PN[p] }, { key: "build", label: "Build" }, { key: "sessions", label: "Sessions", fmt: fmt.int }, { key: "crashed_sessions", label: "Crashed", fmt: fmt.int }, { key: "crash_free_sessions", label: "Crash-free", fmt: fmt.pct(2) },
         { key: "naive_session_starts", label: "session_start events", fmt: fmt.int }, { key: "naive_crash_events", label: "Crash events", fmt: fmt.int }, { key: "naive_crash_free", label: "Naive", fmt: fmt.pct(2) }], rows: D.crash });
     const days = uniq(D.daily.map((r) => r.session_day)).sort();
     card("st-daily", (el) => line(el, { x: days, xFmt: day, yFmt: (v) => Number(v).toFixed(1), yMin: 0, series: P.map((p, i) => ({ name: PN[p], data: days.map((d) => { const r = D.daily.find((x) => x.session_day === d && x.platform === p); return r ? (1000 * r.crashed_sessions) / r.sessions : null; }), color: i })) }),
       { cols: [{ key: "session_day", label: "Day" }, { key: "platform", label: "Platform", fmt: (p) => PN[p] }, { key: "sessions", label: "Sessions", fmt: fmt.int }, { key: "crashed_sessions", label: "Crashed", fmt: fmt.int }], rows: D.daily });
     const at = D.crash_tier.filter((r) => r.platform === "android");
-    card("st-tier", (el) => bar(el, { x: B, yFmt: fmt.pct(1), yMin: 0.9, yMax: 1, series: ["high", "low"].map((t, i) => ({ name: `${t} memory`, data: B.map((b) => (at.find((r) => r.build === b && r.device_tier === t) || {}).crash_free_sessions ?? null), color: i })) }),
+    card("st-tier", (el) => bar(el, { x: B, yFmt: fmt.pct(1), yMin: 0.85, yMax: 1, series: ["high", "low"].map((t, i) => ({ name: `${t} memory`, data: B.map((b) => (at.find((r) => r.build === b && r.device_tier === t) || {}).crash_free_sessions ?? null), color: i })) }),
       { cols: [{ key: "build", label: "Build" }, { key: "device_tier", label: "Tier" }, { key: "sessions", label: "Sessions", fmt: fmt.int }, { key: "crash_free_sessions", label: "Crash-free", fmt: fmt.pct(2) }], rows: at });
   }
 
