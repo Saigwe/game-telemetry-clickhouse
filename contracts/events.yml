@@ -1,0 +1,22 @@
+# Contract for every raw event file (data/raw/events/ingest_date=*.parquet). tests/test_contracts.py enforces it.
+columns:
+  event_id: string
+  event_date: string            # YYYYMMDD, as GA4 exports it
+  event_timestamp: timestamp
+  event_name: string
+  user_pseudo_id: string
+  ga_session_id: int
+  platform: string
+  app_version: string           # may be empty: filled from the session in staging
+  geo_country: string
+  device_tier: string
+  schema_version: int
+  event_params: string          # JSON
+  ingested_at: timestamp
+allowed:
+  platform: [android, ios]
+  schema_version: [1, 2]
+known_events: [first_open, session_start, screen_view, level_start, level_complete, level_fail, app_exception]
+params_by_schema:
+  "1": {level: int}
+  "2": {level_id: "L### string"}

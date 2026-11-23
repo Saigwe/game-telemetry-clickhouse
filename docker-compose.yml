@@ -1,0 +1,9 @@
+# Local ClickHouse for `make all`. No password: local demo only, bound to localhost.
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    ports: ["127.0.0.1:8123:8123"]
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
